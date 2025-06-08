@@ -1,12 +1,21 @@
 name: Build ZMK firmware (nix)
 on:
   workflow_dispatch:
-  # push:
-  #   paths:
-  #     - config/**
-  #     - build.yaml
+  push:
+    paths:
+      - config/**
+      - build.yaml
 
 jobs:
+  generate_zephyr_config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Create Folder and Copy Files
+        run: |
+          mkdir -p zephyr && cp .github/assets/zephyr-config.yml zephyr/config.yml
+          ls zephyr
   build:
     uses: urob/zmk-actions/.github/workflows/build-user-config.yml@main
     with:
