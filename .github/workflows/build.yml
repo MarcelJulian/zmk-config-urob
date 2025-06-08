@@ -14,7 +14,9 @@ jobs:
         uses: actions/checkout@v2
       - name: Create Folder and Copy Files
         run: |
-          mkdir -p zephyr && cp .github/assets/zephyr-config.yml zephyr/config.yml
+          pwd
+          ls
+          mkdir zephyr && cp ./.github/assets/zephyr-config.yml zephyr/config.yml
           ls zephyr
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
