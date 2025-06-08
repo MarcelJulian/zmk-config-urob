@@ -1,0 +1,142 @@
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+#include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/outputs.h>
+#include <dt-bindings/zmk/mouse.h>
+
+// ------------ LAYERS -----------
+#define L_DEFAULT 0
+#define L_NAV 1
+#define L_NUM 2
+#define L_FUN 3
+
+// -------- LAYER TOGGLES --------
+#define LNAV_SPC &lt L_NAV SPACE
+#define LNF_ENT &td_lnf_ent
+#define LNUM_ENT &lt L_NUM ENTER
+
+#define AS(keycode) &as LS(keycode) keycode     // Autoshift Macro
+#define ASN(keycode) &as_ni LS(keycode) keycode   
+
+// ------------ OTHERS -----------
+#define MIC_TOGG &kp F24
+#define CW_TOGG &caps_word
+
+#define BT_SEL_0 &bt BT_SEL 0
+#define BT_SEL_1 &bt BT_SEL 1
+
+&caps_word {
+    continue-list = <UNDERSCORE MINUS>;
+};
+
+// todo: add alt
+
+/ {
+    behaviors {
+        as: auto_shift {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <250>;
+            quick_tap_ms = <0>;
+            require-prior-idle-ms = <50>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+        // No prior idle is useful for preventing typos, but key presses
+        // done after layer triggers have no need of prior idle.
+        as_ni: auto_shift_no_idle {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <250>;
+            quick_tap_ms = <0>;
+            flavor = "tap-preferred";
+            bindings = <&kp>, <&kp>;
+        };
+        lh: layer_tap_hold_preffered {
+            compatible = "zmk,behavior-hold-tap";
+            #binding-cells = <2>;
+            tapping_term_ms = <200>;
+            flavor = "hold-preferred";
+            bindings = <&mo>, <&kp>;
+        };
+        td_d_c: tap_dance_dot_comma {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <250>;
+            bindings = <&kp DOT>, <&kp COMMA>;
+        };
+        td_hrgn: tap_dance_hiragana {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <250>;
+            bindings = <&kp LC(CAPS)>, <&kp LS(CAPS)>;
+        };
+        td_ktkn: tap_dance_katakana {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <250>;
+            bindings = <&kp LA(CAPS)>, <&kp LS(CAPS)>;
+        };
+        td_lnf_ent: tap_dance_layer_num_fun_enter {
+            compatible = "zmk,behavior-tap-dance";
+            #binding-cells = <0>;
+            tapping-term-ms = <200>;
+            bindings = <&lh L_NUM ENTER>, <&mo L_FUN>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+
+        default_layer {
+            bindings = <
+    &kp ESC   AS(N1)    AS(N2)    AS(N3)    AS(N4)    AS(N5)        AS(N6)    AS(N7)    AS(N8)    AS(N9)    AS(N0)    AS(BSPC)
+    &kp TAB   AS(Q)     AS(W)     AS(E)     AS(R)     AS(T)         AS(Y)     AS(U)     AS(I)     AS(O)     AS(P)     AS(MINUS)
+    &kp LSHFT AS(A)     AS(S)     AS(D)     AS(F)     AS(G)         AS(H)     AS(J)     AS(K)     AS(L)     AS(SEMI)  AS(SQT) 
+    &kp LCTRL AS(Z)     AS(X)     AS(C)     AS(V)     AS(B)         AS(N)     AS(M)     AS(COMMA) AS(DOT)   AS(FSLH)  AS(BSLH) 
+                        MIC_TOGG  &kp LGUI                                              AS(GRAVE) AS(EQUAL)
+                                  LNF_ENT   LNAV_SPC                          &kp BSPC  LNUM_ENT
+                                            &trans    &kp TAB       &kp DEL   &trans
+                                            &kp ESC   &kp BSPC      &trans    MIC_TOGG
+            >;
+        };
+
+        navigation_layer {
+            bindings = <
+    &trans    &trans    &trans    &trans    &trans    &trans         &trans   &trans    &trans    &trans    &trans    &trans
+    &trans    &trans    &trans    &trans    &trans    &trans         &kp INS  &kp HOME  &kp UP    &kp END   &kp PG_UP &trans
+    &trans    &kp LGUI  &kp LALT  &kp LCTRL &kp LSHFT &trans         CW_TOGG  &kp LEFT  &kp DOWN  &kp RIGHT &kp PG_DN &trans
+    &trans    &trans    &trans    &trans    &trans    &trans         &trans   &kp FSLH  &kp BSLH  &kp QMARK &kp PIPE  &trans
+                        BT_SEL_0  BT_SEL_1                                              &trans    &trans 
+                                  &trans    &trans                            &trans    &trans
+                                            &trans    &trans         &trans   &trans
+                                            &trans    &trans         &trans   &trans
+            >;
+        };
+
+        number_layer {
+            bindings = <
+    &trans    &trans    &trans    &trans    &trans    &trans         &trans   &trans    &trans    &trans    &trans    &trans
+    AS(GRAVE) ASN(LBKT) ASN(N7)   ASN(N8)   ASN(N9)   ASN(RBKT)       &trans   &trans    &trans    &trans    &trans    &trans
+    ASN(SQT)  ASN(SEMI) ASN(N4)   ASN(N5)   ASN(N6)   ASN(EQUAL)      &trans   &trans    &trans    &trans    &trans    &trans
+    ASN(BSLH) ASN(FSLH) ASN(N1)   ASN(N2)   ASN(N3)   ASN(MINUS)      &trans   &trans    &trans    &trans    &trans    &trans
+                        &td_d_c   ASN(N0)                                                &trans    &trans 
+                                  &trans    &kp SPACE                         &trans    &trans
+                                            &trans    &kp TAB        &trans   &trans
+                                            &kp ESC   &trans         &trans   &trans
+            >;
+        };
+	    function_layer {
+            bindings = <
+    &trans    &trans    &trans    &trans    &trans    &trans         &trans   &trans    &trans    &trans    &trans    &trans
+    &trans    &kp F12   &kp F7    &kp F8    &kp F9    &kp PSCRN      &trans   &trans    &trans    &trans    &trans    &trans
+    &trans    &kp F11   &kp F4    &kp F5    &kp F6    &td_ktkn       &trans   &trans    &trans    &trans    &trans    &trans
+    &trans    &kp F10   &kp F1    &kp F2    &kp F3    &td_hrgn       &trans   &trans    &trans    &trans    &trans    &trans
+                        &trans    &trans                                                &trans    &trans 
+                                  &trans    &kp SPACE                         &trans    &trans
+                                            &trans    &kp TAB        &trans   &trans
+                                            &kp ESC   &trans         &trans   &trans
+            >;
+        };
+    };
+};
