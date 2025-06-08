@@ -2,7 +2,7 @@
 .direnv
 .west
 modules
-firmware
+# firmware
 zephyr
 zmk
 draw/base.yaml
